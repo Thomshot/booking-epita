@@ -23,7 +23,10 @@ public class CreditCardConverter implements AttributeConverter<String, String> {
     @Override
     public String convertToDatabaseColumn(String attribute) {
         // Step 7a: Encrypt the PAN before storing it in the database
-        return attribute;
+        if (attribute == null) {
+            return null;
+        } 
+        return CryptographyHelper.encryptData(attribute);
         // Step 7a: End of PAN encryption
     }
 
@@ -32,8 +35,8 @@ public class CreditCardConverter implements AttributeConverter<String, String> {
         // Step 7b: Decrypt the PAN when reading it from the database
         String pan = dbData;
         // Step 7b: End of PAN decryption
-        String maskedPanString = panMasking(pan);
-        return maskedPanString;
+        String decryptedData = CryptographyHelper.decryptData(pan);
+        return panMasking(decryptedData);
     }
 
     private String panMasking(String pan) {
